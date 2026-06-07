@@ -1,0 +1,218 @@
+/* Site-level Advanced CTA buttons with layered glow, ripple and 3D hover */
+.advanced-cta {
+  position: fixed;
+  left: 1rem; /* snug to left corner */
+  bottom: 1rem; /* snug to bottom corner */
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  z-index: 9999;
+  align-items: flex-start; /* align children to left */
+  pointer-events: auto;
+}
+
+/* shell that contains the trigger and the hidden group */
+.cta-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: flex-start;
+}
+
+.cta-trigger {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  background: linear-gradient(135deg,#ff7a18,#ffb347);
+  color: white;
+  border: none;
+  box-shadow: 0 10px 30px rgba(255,140,0,0.18);
+  cursor: pointer;
+  transition: transform 220ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms ease;
+}
+
+.cta-trigger:hover,
+.cta-trigger:focus {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 18px 44px rgba(255,140,0,0.22);
+}
+
+/* subtle ringing animation for phone icons to attract attention */
+@keyframes cta-phone-ring {
+  0% { transform: rotate(0deg); }
+  10% { transform: rotate(-18deg); }
+  20% { transform: rotate(14deg); }
+  30% { transform: rotate(-10deg); }
+  40% { transform: rotate(6deg); }
+  50% { transform: rotate(-4deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* apply the ring to the main trigger phone and the contact button phone icon */
+.cta-trigger svg,
+.cta-contact .cta-icon svg {
+  transform-origin: 40% 60%; /* tilt pivot like a handset */
+  animation: cta-phone-ring 2s cubic-bezier(.2,.9,.2,1) infinite;
+}
+
+/* respect user's reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .cta-trigger svg,
+  .cta-contact .cta-icon svg {
+    animation: none !important;
+  }
+}
+
+/* group is hidden by default and revealed on hover/focus-within */
+.cta-group {
+  position: absolute;
+  left: 50%; /* center horizontally relative to trigger */
+  bottom: calc(100% + 10px); /* position above the trigger */
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  transform: translateY(8px) translateX(-50%) scale(.98);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 320ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease;
+}
+
+.cta-shell:hover .cta-group,
+.cta-shell:focus-within .cta-group {
+  transform: translateY(0) translateX(-50%) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* invisible buffer between trigger and group to keep hover state when cursor crosses the gap */
+.cta-buffer {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 5px);
+  transform: translateX(-50%);
+  width: 64px;
+  height: 18px; /* covers the gap area so hover doesn't collapse */
+  pointer-events: auto;
+  background: transparent;
+}
+
+/* tooltip shown on hover/focus of each CTA button */
+.cta-button { position: relative; }
+.cta-tooltip {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) scale(.98);
+  background: rgba(2,6,23,0.96);
+  color: white;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 8px 28px rgba(2,6,23,0.32);
+  transition: opacity 200ms ease, transform 220ms cubic-bezier(.2,.9,.2,1);
+}
+.cta-button:hover .cta-tooltip,
+.cta-button:focus .cta-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+  pointer-events: auto;
+}
+
+.cta-button {
+  --pad-x: 1.05rem;
+  --pad-y: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  padding: var(--pad-y) var(--pad-x);
+  border-radius: 999px;
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  transform-origin: center;
+  will-change: transform, box-shadow;
+  transition: transform 280ms cubic-bezier(.2,.9,.2,1), box-shadow 280ms ease, filter 220ms ease;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.28);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.cta-contact { background: linear-gradient(90deg,#4f46e5,#06b6d4); }
+.cta-whatsapp { background: linear-gradient(90deg,#25D366,#1DA851); }
+.cta-mail { background: linear-gradient(90deg,#f97316,#ef4444); }
+
+.cta-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem; /* slightly larger icon */
+  height: 1.4rem;
+  opacity: 0.98;
+  transition: transform 260ms cubic-bezier(.2,.9,.2,1);
+}
+
+/* Hide textual labels to show icon-only CTAs per request. Keep aria-label for accessibility. */
+.cta-text { display: none !important; }
+
+.cta-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02));
+  pointer-events: none;
+  opacity: 0.7;
+  transition: opacity 220ms ease, transform 300ms cubic-bezier(.2,.9,.2,1);
+}
+
+.cta-button .cta-effect {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: rgba(255,255,255,0.14);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cta-button {
+  --pad: 0.8rem; /* slightly bigger */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  padding: var(--pad);
+  min-width: 52px; /* increased size */
+  min-height: 52px;
+  border-radius: 999px;
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  transform-origin: center;
+  will-change: transform, box-shadow;
+  transition: transform 280ms cubic-bezier(.2,.9,.2,1), box-shadow 280ms ease, filter 220ms ease;
+  box-shadow: 0 8px 22px rgba(2,6,23,0.28);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.cta-button:focus .cta-effect,
+.cta-button:hover .cta-effect {
+  animation: cta-ripple 700ms cubic-bezier(.2,.9,.2,1) forwards;
+}
+
+@media (max-width: 640px) {
+  .advanced-cta { left: 0.75rem; bottom: 0.9rem; }
+  .cta-button { padding: 0.45rem; min-width: 40px; min-height: 40px; }
+}
